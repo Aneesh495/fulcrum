@@ -1,0 +1,31 @@
+# Byte-compiled / native libraries
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+
+# Build directories
+build/
+dist/
+bin/
+
+# Lua & LuaJIT artifacts
+luac.out
+*.luac
+
+# Editor and OS files
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Trajectory and benchmark artifacts
+*.csv
+*.obj
+*.jsonl
+recordings/
+tmp/

@@ -1,0 +1,15 @@
+local runner = require("tests.test_framework")
+
+-- Test modules will be loaded here as we implement each module
+runner.suite("Core Framework Initialization")
+
+runner.test("Version metadata check", function()
+  local ver = require("fulcrum.version")
+  runner.assert_equal(ver.major, 1, "Major version")
+  runner.assert_equal(ver.minor, 0, "Minor version")
+  runner.assert_equal(ver.patch, 0, "Patch version")
+  runner.assert_equal(ver.string, "1.0.0", "Version string")
+  runner.assert_equal(ver.codename, "Lagrange", "Version codename")
+end)
+
+runner.run()
