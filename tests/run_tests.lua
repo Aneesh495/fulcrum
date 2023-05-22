@@ -1,8 +1,9 @@
 local runner = require("tests.test_framework")
 
--- Test modules will be loaded here as we implement each module
-runner.suite("Core Framework Initialization")
+-- Core math suites
+require("tests.test_vec3")
 
+runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
   local ver = require("fulcrum.version")
   runner.assert_equal(ver.major, 1, "Major version")
