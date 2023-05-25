@@ -2,6 +2,7 @@ local runner = require("tests.test_framework")
 
 -- Core math suites
 require("tests.test_vec3")
+require("tests.test_quat")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
