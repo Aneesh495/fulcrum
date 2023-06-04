@@ -4,6 +4,7 @@ local runner = require("tests.test_framework")
 require("tests.test_vec3")
 require("tests.test_quat")
 require("tests.test_mat3")
+require("tests.test_matrix")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
