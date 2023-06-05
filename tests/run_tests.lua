@@ -5,6 +5,7 @@ require("tests.test_vec3")
 require("tests.test_quat")
 require("tests.test_mat3")
 require("tests.test_matrix")
+require("tests.test_decomp")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
