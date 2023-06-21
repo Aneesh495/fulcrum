@@ -9,6 +9,7 @@ require("tests.test_decomp")
 require("tests.test_spatial")
 require("tests.test_so3")
 require("tests.test_se3")
+require("tests.test_autodiff")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
