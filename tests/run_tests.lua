@@ -12,6 +12,9 @@ require("tests.test_se3")
 require("tests.test_autodiff")
 require("tests.test_polynomial")
 
+-- Dynamics suites
+require("tests.test_joint")
+
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
   local ver = require("fulcrum.version")
