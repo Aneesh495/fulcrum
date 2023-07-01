@@ -14,6 +14,7 @@ require("tests.test_polynomial")
 
 -- Dynamics suites
 require("tests.test_joint")
+require("tests.test_kinematics")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
