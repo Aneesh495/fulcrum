@@ -23,15 +23,15 @@ function kinematics.forward_kinematics(m, q)
     end
 
     local X_J = b.joint.transform(qi)
-    -- Total transform from parent: X_T * X_J
-    local X_pi = b.X_T * X_J
+    -- Transform across joint from parent to child: X_J * X_T
+    local X_pi = X_J * b.X_T
     X_tree[i] = X_pi
 
     if b.parent_id == 0 then
       X_world[i] = X_pi
     else
-      -- X_0i = X_0p * X_pi
-      X_world[i] = X_world[b.parent_id] * X_pi
+      -- X_0i = X_pi * X_0p
+      X_world[i] = X_pi * X_world[b.parent_id]
     end
   end
 
