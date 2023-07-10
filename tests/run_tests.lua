@@ -16,6 +16,7 @@ require("tests.test_polynomial")
 require("tests.test_joint")
 require("tests.test_kinematics")
 require("tests.test_jacobians")
+require("tests.test_rnea")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
