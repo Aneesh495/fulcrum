@@ -138,24 +138,10 @@ function spatial.transform_motion(X, v)
 end
 
 function spatial.transform_force(X, f)
-  -- Force transform: f_A = X^* f_B = X^(-T) f_B
-  -- Since X = [ R, 0 ; -R*p~, R ], X^(-T) = [ R, -R*p~ ; 0, R ]
-  local res = { 0, 0, 0, 0, 0, 0 }
-  -- res = X^(-T) * f
-  -- Compute via solving X^T * res = f or explicit formula
-  -- X^T = [ R^T, p~ * R^T ; 0, R^T ]
-  -- Alternatively: X^(-1) = [ R^T, 0 ; p~ R^T, R^T ] -> X^(-T) = [ R, -R p~ ; 0, R ]
-  for i = 1, 3 do
-    local s1 = 0.0
-    local s2 = 0.0
-    for j = 1, 3 do
-      s1 = s1 + X[j][i] * f[j] + X[3 + j][i] * f[3 + j]
-      s2 = s2 + X[3 + j][3 + i] * f[3 + j]
-    end
-    -- More cleanly, solve X^T y = f
-  end
+  -- Force transform by duality (power invariance):
+  -- If v_B = X * v_A, then f_A = X^T * f_B
   local Xt = matrix.transpose(X)
-  return matrix.solve_lu(Xt, f)
+  return matrix.mul_vec(Xt, f)
 end
 
 function spatial.inertia(mass, com, I_rot)

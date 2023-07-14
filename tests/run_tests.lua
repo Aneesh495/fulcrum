@@ -17,6 +17,7 @@ require("tests.test_joint")
 require("tests.test_kinematics")
 require("tests.test_jacobians")
 require("tests.test_rnea")
+require("tests.test_crba")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
