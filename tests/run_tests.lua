@@ -19,6 +19,7 @@ require("tests.test_jacobians")
 require("tests.test_rnea")
 require("tests.test_crba")
 require("tests.test_aba")
+require("tests.test_operational_space")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
