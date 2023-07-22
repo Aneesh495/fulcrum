@@ -21,6 +21,9 @@ require("tests.test_crba")
 require("tests.test_aba")
 require("tests.test_operational_space")
 
+-- Integrators suites
+require("tests.test_symplectic")
+
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
   local ver = require("fulcrum.version")
