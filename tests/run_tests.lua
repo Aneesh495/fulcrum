@@ -23,6 +23,7 @@ require("tests.test_operational_space")
 
 -- Integrators suites
 require("tests.test_symplectic")
+require("tests.test_forest_ruth")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
