@@ -25,6 +25,7 @@ require("tests.test_operational_space")
 require("tests.test_symplectic")
 require("tests.test_forest_ruth")
 require("tests.test_lie_group_integrator")
+require("tests.test_gauss_legendre")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
