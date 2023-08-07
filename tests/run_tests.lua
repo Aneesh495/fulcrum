@@ -27,6 +27,9 @@ require("tests.test_forest_ruth")
 require("tests.test_lie_group_integrator")
 require("tests.test_gauss_legendre")
 
+-- Contact suites
+require("tests.test_lemke")
+
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
   local ver = require("fulcrum.version")
