@@ -30,6 +30,7 @@ require("tests.test_gauss_legendre")
 -- Contact suites
 require("tests.test_lemke")
 require("tests.test_pgs")
+require("tests.test_bilateral")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
