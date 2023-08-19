@@ -32,6 +32,9 @@ require("tests.test_lemke")
 require("tests.test_pgs")
 require("tests.test_bilateral")
 
+-- Geometry suites
+require("tests.test_shapes")
+
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
   local ver = require("fulcrum.version")
