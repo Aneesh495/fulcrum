@@ -35,6 +35,7 @@ require("tests.test_bilateral")
 -- Geometry suites
 require("tests.test_shapes")
 require("tests.test_gjk")
+require("tests.test_epa")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
