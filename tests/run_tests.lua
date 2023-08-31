@@ -36,6 +36,7 @@ require("tests.test_bilateral")
 require("tests.test_shapes")
 require("tests.test_gjk")
 require("tests.test_epa")
+require("tests.test_bvh")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
