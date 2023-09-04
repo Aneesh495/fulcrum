@@ -190,4 +190,42 @@ function shapes.polyhedron(vertices, transform)
   }
 end
 
+function shapes.translate(shape, delta)
+  delta = delta or vec3.zero()
+  local t = shape.type
+  if t == "sphere" then
+    return shapes.sphere(shape.radius, shape.center + delta)
+  elseif t == "box" then
+    local p = (shape.transform and shape.transform.p) or vec3.zero()
+    local R = (shape.transform and shape.transform.R) or mat3.identity()
+    return shapes.box(shape.half_extents, { R = R, p = p + delta })
+  elseif t == "capsule" then
+    local p = (shape.transform and shape.transform.p) or vec3.zero()
+    local R = (shape.transform and shape.transform.R) or mat3.identity()
+    return shapes.capsule(shape.radius, shape.half_height, { R = R, p = p + delta })
+  elseif t == "cylinder" then
+    local p = (shape.transform and shape.transform.p) or vec3.zero()
+    local R = (shape.transform and shape.transform.R) or mat3.identity()
+    return shapes.cylinder(shape.radius, shape.half_height, { R = R, p = p + delta })
+  elseif t == "ellipsoid" then
+    local p = (shape.transform and shape.transform.p) or vec3.zero()
+    local R = (shape.transform and shape.transform.R) or mat3.identity()
+    return shapes.ellipsoid(shape.radii, { R = R, p = p + delta })
+  elseif t == "polyhedron" then
+    local p = (shape.transform and shape.transform.p) or vec3.zero()
+    local R = (shape.transform and shape.transform.R) or mat3.identity()
+    return shapes.polyhedron(shape.vertices, { R = R, p = p + delta })
+  else
+    return {
+      type = "translated_" .. tostring(t),
+      support = function(d)
+        return shape.support(d) + delta
+      end,
+      translated = function(self, d2)
+        return shapes.translate(self, d2)
+      end
+    }
+  end
+end
+
 return shapes
