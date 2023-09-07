@@ -38,6 +38,7 @@ require("tests.test_gjk")
 require("tests.test_epa")
 require("tests.test_bvh")
 require("tests.test_ccd")
+require("tests.test_ilqr")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
