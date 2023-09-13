@@ -12,6 +12,8 @@ function mat3.new(m11, m12, m13, m21, m22, m23, m31, m32, m33)
   return setmetatable(m, mat3_mt)
 end
 
+mat3.from_values = mat3.new
+
 function mat3.identity()
   return mat3.new(
     1.0, 0.0, 0.0,
@@ -148,6 +150,17 @@ function mat3.from_axis_angle(axis, angle)
     y * x * c1 + z * s, c + y * y * c1,     y * z * c1 - x * s,
     z * x * c1 - y * s, z * y * c1 + x * s, c + z * z * c1
   )
+end
+
+function mat3.from_euler_xyz(roll, pitch, yaw)
+  roll = roll or 0.0
+  pitch = pitch or 0.0
+  yaw = yaw or 0.0
+
+  local Rx = mat3.from_axis_angle(vec3.unit_x(), roll)
+  local Ry = mat3.from_axis_angle(vec3.unit_y(), pitch)
+  local Rz = mat3.from_axis_angle(vec3.unit_z(), yaw)
+  return Rz * Ry * Rx
 end
 
 function mat3.to_axis_angle(m)
