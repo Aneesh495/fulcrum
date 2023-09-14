@@ -97,4 +97,6 @@ function crba.inertia_matrix(m, q)
   return M
 end
 
+crba.mass_matrix = crba.inertia_matrix
+
 return crba

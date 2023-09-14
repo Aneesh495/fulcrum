@@ -126,4 +126,6 @@ function jacobians.inverse_kinematics_step(m, q, body_id, target_pos, target_R, 
   return q_next, err
 end
 
+jacobians.body_jacobian = jacobians.geometric_jacobian
+
 return jacobians

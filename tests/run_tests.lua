@@ -41,6 +41,7 @@ require("tests.test_ccd")
 require("tests.test_ilqr")
 require("tests.test_collocation")
 require("tests.test_urdf_parser")
+require("tests.test_models")
 
 runner.suite("Core Framework Initialization")
 runner.test("Version metadata check", function()
