@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fulcrum: Lie Group Variational Integrator & Articulated Multibody Visualizer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <span class="logo-glyph">⬡</span>
+        <span class="logo-title">FULCRUM</span>
+        <span class="logo-subtitle">Lie Group Variational Integrators & Articulated Multibody Dynamics</span>
+      </div>
+      <div class="header-controls">
+        <label for="scenario-select">Scenario:</label>
+        <select id="scenario-select">
+          <option value="dzhanibekov">Dzhanibekov Intermediate Axis Flip (SO(3) LGVI)</option>
+          <option value="double_pendulum">Double Pendulum Chaos (Symplectic Verlet)</option>
+          <option value="newtons_cradle">Newton's Cradle (Moreau-Jean LCP Impacts)</option>
+          <option value="manipulator_7dof">7-DOF Manipulator (Operational Space IK)</option>
+          <option value="quadruped">12-DOF Quadruped Trotting Gait</option>
+        </select>
+        <button id="btn-reset" class="btn">↺ Reset</button>
+        <button id="btn-play" class="btn btn-primary">▶ Play</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="viewport-panel">
+        <canvas id="canvas3d"></canvas>
+        <div class="hud-overlay">
+          <div class="hud-item"><span class="hud-label">FPS:</span> <span id="val-fps">60</span></div>
+          <div class="hud-item"><span class="hud-label">Sim Time:</span> <span id="val-time">0.000 s</span></div>
+          <div class="hud-item"><span class="hud-label">Integrator:</span> <span id="val-integrator">SO(3) Discrete Variational</span></div>
+          <div class="hud-item"><span class="hud-label">Energy Drift:</span> <span id="val-drift">1.42e-12</span></div>
+        </div>
+      </div>
+
+      <aside class="sidebar-panel">
+        <div class="panel-section">
+          <h3>Telemetry & Diagnostics</h3>
+          <div class="telemetry-grid">
+            <div class="stat-card">
+              <span class="stat-label">Total Energy (H)</span>
+              <span id="stat-energy" class="stat-val">14.8210 J</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Kinetic Energy (T)</span>
+              <span id="stat-ke" class="stat-val">14.8210 J</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Potential Energy (V)</span>
+              <span id="stat-pe" class="stat-val">0.0000 J</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Angular Momentum |L|</span>
+              <span id="stat-momentum" class="stat-val">5.4311 Nms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section chart-section">
+          <h3>Energy Conservation Graph</h3>
+          <canvas id="canvas-chart" width="360" height="150"></canvas>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="dot dot-total"></span> Total Energy H</span>
+            <span class="legend-item"><span class="dot dot-ke"></span> Kinetic T</span>
+            <span class="legend-item"><span class="dot dot-pe"></span> Potential V</span>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Joint Coordinates (q)</h3>
+          <div id="joint-readouts" class="joint-container">
+            <!-- Dynamic joint sliders/values -->
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Camera Controls</h3>
+          <p class="help-text">• Left Drag: Orbit Camera</p>
+          <p class="help-text">• Right Drag: Pan Camera</p>
+          <p class="help-text">• Mouse Wheel: Zoom In/Out</p>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <div class="playback-bar">
+        <span id="scrubber-time-start">0.00s</span>
+        <input type="range" id="timeline-scrubber" min="0" max="1000" value="0">
+        <span id="scrubber-time-end">10.00s</span>
+      </div>
+      <div class="speed-control">
+        <span>Speed:</span>
+        <button class="speed-btn" data-speed="0.25">0.25x</button>
+        <button class="speed-btn" data-speed="0.5">0.5x</button>
+        <button class="speed-btn active" data-speed="1.0">1.0x</button>
+        <button class="speed-btn" data-speed="2.0">2.0x</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
