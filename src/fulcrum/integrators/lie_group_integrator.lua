@@ -14,7 +14,12 @@ function lgvi.step_so3(R_k, Omega_k, J_diag, tau_k, dt, max_iter, tol)
   max_iter = max_iter or 15
   tol = tol or 1e-12
 
-  local J = mat3.from_diag(J_diag.x, J_diag.y, J_diag.z)
+  local tr_J = J_diag.x + J_diag.y + J_diag.z
+  local Jd = mat3.from_diag(
+    0.5 * tr_J - J_diag.x,
+    0.5 * tr_J - J_diag.y,
+    0.5 * tr_J - J_diag.z
+  )
   local Pi_k = vec3.new(
     J_diag.x * Omega_k.x,
     J_diag.y * Omega_k.y,
@@ -28,12 +33,12 @@ function lgvi.step_so3(R_k, Omega_k, J_diag, tau_k, dt, max_iter, tol)
   local f = Omega_k * dt
 
   -- Solve implicit discrete Euler-Poincaré equation:
-  -- res(f) = (F * J - J * F^T)^vee - h * M_vec = 0
+  -- res(f) = (F * J_d - J_d * F^T)^vee - h * M_vec = 0
   for _ = 1, max_iter do
     local F = so3.exp(f)
-    local FJ = F * J
-    local JFt = J * mat3.transpose(F)
-    local skew_diff = FJ - JFt
+    local FJd = F * Jd
+    local JdFt = Jd * mat3.transpose(F)
+    local skew_diff = FJd - JdFt
 
     local v_diff = so3.vee(skew_diff)
     local res = v_diff - (M_vec * dt)
@@ -41,12 +46,12 @@ function lgvi.step_so3(R_k, Omega_k, J_diag, tau_k, dt, max_iter, tol)
     if vec3.norm(res) < tol then break end
 
     -- Analytical Jacobian of residual with respect to f:
-    -- D_res = tr(F*J)*I - (F*J) (approximate or exact)
-    local tr_FJ = mat3.trace(FJ)
+    -- D_res = tr(F*J_d)*I - (F*J_d)
+    local tr_FJd = mat3.trace(FJd)
     local Grad = mat3.new(
-      tr_FJ - FJ[1][1], -FJ[1][2],        -FJ[1][3],
-      -FJ[2][1],        tr_FJ - FJ[2][2], -FJ[2][3],
-      -FJ[3][1],        -FJ[3][2],        tr_FJ - FJ[3][3]
+      tr_FJd - FJd[1][1], -FJd[1][2],        -FJd[1][3],
+      -FJd[2][1],        tr_FJd - FJd[2][2], -FJd[2][3],
+      -FJd[3][1],        -FJd[3][2],        tr_FJd - FJd[3][3]
     )
 
     local delta_f = mat3.inv(Grad) * res

@@ -92,4 +92,26 @@ function symplectic.implicit_midpoint(m, q, q_dot, tau, dt, max_iter, tol, f_ext
   return q1, v1, a_final
 end
 
+function symplectic.verlet_step(q, qd, accel_fn, dt)
+  local n = #q
+  local a_k = accel_fn(q)
+  local qd_half = {}
+  local q_next = {}
+  for i = 1, n do
+    local v_half = (qd[i] or 0.0) + 0.5 * dt * (a_k[i] or 0.0)
+    qd_half[i] = v_half
+    q_next[i] = (q[i] or 0.0) + dt * v_half
+  end
+
+  local a_next = accel_fn(q_next)
+  local qd_next = {}
+  for i = 1, n do
+    qd_next[i] = qd_half[i] + 0.5 * dt * (a_next[i] or 0.0)
+  end
+
+  return q_next, qd_next, a_next
+end
+
+symplectic.velocity_verlet_step = symplectic.verlet_step
+
 return symplectic

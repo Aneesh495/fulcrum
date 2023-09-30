@@ -64,4 +64,30 @@ function forest_ruth.yoshida6(m, q, q_dot, tau, dt, f_ext)
   return q3, v3, a3
 end
 
+function forest_ruth.step_hamiltonian(q, q_dot, accel_fn, dt)
+  local n = #q
+  local q_curr = {}
+  local qd_curr = {}
+  for i = 1, n do
+    q_curr[i] = q[i] or 0.0
+    qd_curr[i] = q_dot[i] or 0.0
+  end
+
+  for s = 1, 4 do
+    if c[s] ~= 0.0 then
+      for i = 1, n do
+        q_curr[i] = q_curr[i] + c[s] * dt * qd_curr[i]
+      end
+    end
+    if d[s] ~= 0.0 then
+      local acc = accel_fn(q_curr)
+      for i = 1, n do
+        qd_curr[i] = qd_curr[i] + d[s] * dt * (acc[i] or 0.0)
+      end
+    end
+  end
+
+  return q_curr, qd_curr
+end
+
 return forest_ruth

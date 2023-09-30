@@ -62,6 +62,7 @@ runner.test("SE(3) rigid body free flight", function()
     T, twist = lgvi.step_se3(T, twist, mass, J_diag, nil, dt)
   end
 
-  -- Traveled approx 1.0 in x
-  runner.assert_near(T.p.x, 1.0, 0.05)
+  -- Body with vx=1.0 and wz=1.0 follows circular arc: x(1) = sin(1) ~ 0.8415, y(1) = 1 - cos(1) ~ 0.4597
+  runner.assert_near(T.p.x, math.sin(1.0), 0.01)
+  runner.assert_near(T.p.y, 1.0 - math.cos(1.0), 0.01)
 end)

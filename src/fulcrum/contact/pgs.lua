@@ -49,6 +49,11 @@ function pgs.solve_box(M, q, lb, ub, max_iter, tol, omega, z_init)
   return z, iter
 end
 
+function pgs.solve_unilateral(M, q, max_iter, tol, omega)
+  -- Unilateral contact LCP: z >= 0, w = M*z + q >= 0, w^T * z = 0
+  return pgs.solve_box(M, q, nil, nil, max_iter, tol, omega)
+end
+
 function pgs.solve_contact_friction(W, b, num_contacts, mu, max_iter, tol, omega)
   -- Solves coupled 3D normal + tangential friction contact problem:
   -- For contact k, z has [fn, ft1, ft2].
