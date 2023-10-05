@@ -309,3 +309,16 @@ input[type="range"] {
   border-color: var(--accent-cyan);
   background-color: #1e334a;
 }
+
+.recording-note { margin: 0; padding: .65rem 1rem; color: #d3e1ee; overflow-wrap: anywhere; }
+.recording-note a { color: #77e4ff; }
+.main-content { grid-template-columns: minmax(0, 1fr) minmax(16rem, 29%); }
+.main-content > * { min-width: 0; }
+@media (max-width: 800px) {
+  body, .app-container { height: auto; min-height: 100vh; overflow: auto; }
+  .header, .header > div, .footer { flex-wrap: wrap; gap: .5rem; height: auto; }
+  select { max-width: 100%; }
+  .main-content { grid-template-columns: minmax(0, 1fr); overflow: visible; }
+  .viewport-panel { height: 54vh; }
+  .sidebar-panel { overflow: visible; }
+}

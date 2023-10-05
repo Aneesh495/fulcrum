@@ -25,8 +25,10 @@
 
   // State & Configuration
   const state = {
-    scenario: 'dzhanibekov',
-    playing: true,
+    scenario: 'recorded',
+    playing: false,
+    trajectory: null,
+    replayTime: 0,
     time: 0.0,
     speed: 1.0,
     fps: 60,
@@ -197,6 +199,25 @@
   // Physics Simulation Scenarios
   function initScenario(name) {
     state.time = 0.0;
+    state.replayTime = 0;
+    state.playing = false;
+    elPlay.textContent = '▶ Play';
+    elScrubber.disabled = name !== 'recorded';
+    document.getElementById('recorded-joints').textContent = '';
+    const replay = name === 'recorded';
+    document.getElementById('scrubber-time-start').textContent = replay ? '0.00s' : '';
+    document.getElementById('scrubber-time-end').textContent = replay ? state.trajectory.frames.at(-1).time.toFixed(2) + 's' : '';
+    elScrubber.max = replay ? state.trajectory.frames.length - 1 : 0;
+    if (replay) {
+      camera.target = V3.new(0, 0, 0);
+      camera.distance = 3.5;
+      elIntegrator.textContent = state.trajectory.metadata.integrator;
+      showFrame(0);
+      return;
+    }
+    for (const field of [elEnergy, elKe, elPe, elMomentum, elDrift]) {
+      if (field) field.textContent = 'Unavailable';
+    }
     state.energyHistory = [];
     state.keHistory = [];
     state.peHistory = [];
@@ -204,7 +225,7 @@
     if (name === 'dzhanibekov') {
       camera.target = V3.new(0, 0, 0);
       camera.distance = 2.5;
-      elIntegrator.textContent = 'SO(3) Discrete Variational';
+      elIntegrator.textContent = 'Browser illustration';
       state.simState = {
         I: { x: 1.0, y: 2.0, z: 3.0 },
         w: { x: 0.01, y: 4.0, z: 0.0 },
@@ -213,7 +234,7 @@
     } else if (name === 'double_pendulum') {
       camera.target = V3.new(0, 0, -1.0);
       camera.distance = 3.5;
-      elIntegrator.textContent = 'Forest-Ruth 4th-Order Symplectic';
+      elIntegrator.textContent = 'Browser illustration';
       state.simState = {
         th1: Math.PI * 0.8,
         th2: Math.PI * 0.8,
@@ -227,7 +248,7 @@
     } else if (name === 'newtons_cradle') {
       camera.target = V3.new(0, 0, -0.25);
       camera.distance = 2.0;
-      elIntegrator.textContent = 'Moreau-Jean LCP Time-Stepping';
+      elIntegrator.textContent = 'Browser illustration';
       state.simState = {
         balls: [
           { th: 0.8, w: 0.0 },
@@ -240,7 +261,7 @@
     } else if (name === 'manipulator_7dof') {
       camera.target = V3.new(0, 0, 0.6);
       camera.distance = 3.0;
-      elIntegrator.textContent = 'Operational Space Nullspace IK';
+      elIntegrator.textContent = 'Browser illustration';
       state.simState = {
         q: [0, 0.5, 0, -1.0, 0, 0.5, 0],
         targetTraj: []
@@ -248,7 +269,7 @@
     } else if (name === 'quadruped') {
       camera.target = V3.new(0, 0, 0.35);
       camera.distance = 3.0;
-      elIntegrator.textContent = 'Featherstone ABA & Coulomb Friction';
+      elIntegrator.textContent = 'Browser illustration';
       state.simState = {
         phase: 0.0
       };
@@ -288,7 +309,7 @@
       elKe.textContent = ke.toFixed(4) + ' J';
       elPe.textContent = '0.0000 J';
       elMomentum.textContent = L.toFixed(4) + ' Nms';
-      elDrift.textContent = Math.abs(ke - 16.0001).toExponential(2);
+      elDrift.textContent = (Math.abs(ke - 16.00005) / 16.00005).toExponential(2);
 
       recordEnergy(ke, ke, 0);
 
@@ -321,8 +342,8 @@
       elEnergy.textContent = (total + 30).toFixed(4) + ' J';
       elKe.textContent = ke.toFixed(4) + ' J';
       elPe.textContent = (pe + 30).toFixed(4) + ' J';
-      elMomentum.textContent = (s.w1 + s.w2).toFixed(4) + ' Nms';
-      elDrift.textContent = '2.15e-11';
+      elMomentum.textContent = 'Unavailable';
+      elDrift.textContent = 'Unavailable';
 
       recordEnergy(total + 30, ke, pe + 30);
     } else if (state.scenario === 'newtons_cradle') {
@@ -353,7 +374,7 @@
       elKe.textContent = totalKe.toFixed(4) + ' J';
       elPe.textContent = (1.2 - totalKe).toFixed(4) + ' J';
       elMomentum.textContent = '0.0000 Nms';
-      elDrift.textContent = '4.88e-12';
+      elDrift.textContent = 'Unavailable';
 
       recordEnergy(1.2, totalKe, 1.2 - totalKe);
     } else if (state.scenario === 'manipulator_7dof') {
@@ -365,7 +386,7 @@
       elKe.textContent = '4.1205 J';
       elPe.textContent = '18.3305 J';
       elMomentum.textContent = '1.8721 Nms';
-      elDrift.textContent = '3.04e-12';
+      elDrift.textContent = 'Unavailable';
       recordEnergy(22.451, 4.12, 18.33);
     } else if (state.scenario === 'quadruped') {
       state.simState.phase += dt * 8.0;
@@ -373,7 +394,7 @@
       elKe.textContent = '32.5012 J';
       elPe.textContent = '51.6278 J';
       elMomentum.textContent = '7.4120 Nms';
-      elDrift.textContent = '1.18e-12';
+      elDrift.textContent = 'Unavailable';
       recordEnergy(84.129, 32.5, 51.62);
     }
   }
@@ -394,7 +415,19 @@
     ctx3d.clearRect(0, 0, canvas3d.width, canvas3d.height);
     drawGrid();
 
-    if (state.scenario === 'dzhanibekov') {
+    if (state.scenario === 'recorded') {
+      const links = state.simState.links;
+      const point = position => V3.new(...position);
+      const p0 = point(links[0].pos);
+      const p1 = point(links[1].pos);
+      const link = links[1];
+      const p2 = point(link.pos.map((coordinate, axis) => coordinate - 0.6 * link.rot[axis][2]));
+      drawLine(p0, p1, '#e6edf3', 3);
+      drawLine(p1, p2, '#e6edf3', 3);
+      drawSphere(p0, 0.05, '#8b949e');
+      drawSphere(p1, 0.10, '#00e5ff');
+      drawSphere(p2, 0.10, '#00e676');
+    } else if (state.scenario === 'dzhanibekov') {
       // Draw asymmetric T-handle
       const s = state.simState;
       const angle = state.time * 4.0;
@@ -534,7 +567,25 @@
   // Update UI Elements
   function updateUI() {
     elTime.textContent = state.time.toFixed(3) + ' s';
-    elScrubber.value = (state.time * 50) % 1000;
+
+  }
+
+  function showFrame(index) {
+    const frames = state.trajectory.frames;
+    const frame = frames[index];
+    state.simState = frame;
+    state.time = frame.time;
+    elScrubber.value = index;
+    const history = frames.slice(0, index + 1);
+    state.energyHistory = history.map(item => item.energy);
+    state.keHistory = history.map(item => item.kinetic);
+    state.peHistory = history.map(item => item.potential);
+    elEnergy.textContent = frame.energy.toFixed(4) + ' J';
+    elKe.textContent = frame.kinetic.toFixed(4) + ' J';
+    elPe.textContent = frame.potential.toFixed(4) + ' J';
+    elDrift.textContent = frame.drift.toExponential(2);
+    elMomentum.textContent = 'Unavailable';
+    document.getElementById('recorded-joints').textContent = frame.q.map(value => value.toFixed(3)).join(', ') + ' rad';
   }
 
   // Animation Loop
@@ -547,7 +598,17 @@
     lastTimestamp = now;
 
     if (state.playing) {
-      stepPhysics((deltaMs / 1000) * state.speed);
+      const elapsed = (deltaMs / 1000) * state.speed;
+      if (state.scenario === 'recorded') {
+        const { frames, metadata } = state.trajectory;
+        state.replayTime += elapsed;
+        const index = Math.min(frames.length - 1, Math.floor(state.replayTime / metadata.dt));
+        if (Number(elScrubber.value) !== index) showFrame(index);
+        if (index === frames.length - 1) {
+          state.playing = false;
+          elPlay.textContent = '▶ Replay';
+        }
+      } else stepPhysics(elapsed);
     }
 
     renderScene();
@@ -566,6 +627,10 @@
 
   // Controls Handlers
   elPlay.addEventListener('click', () => {
+    if (state.scenario === 'recorded' && !state.playing && elScrubber.value === elScrubber.max) {
+      state.replayTime = 0;
+      showFrame(0);
+    }
     state.playing = !state.playing;
     elPlay.textContent = state.playing ? '⏸ Pause' : '▶ Play';
   });
@@ -587,8 +652,27 @@
     });
   });
 
-  // Start Visualizer
-  initScenario('dzhanibekov');
-  requestAnimationFrame(animate);
+  elScrubber.addEventListener('input', () => {
+    state.playing = false;
+    elPlay.textContent = '▶ Play';
+    const index = Number(elScrubber.value);
+    state.replayTime = index * state.trajectory.metadata.dt;
+    showFrame(index);
+  });
+
+  elPlay.disabled = true;
+  elScenario.disabled = true;
+  fetch('./trajectory.json').then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  }).then(trajectory => {
+    state.trajectory = trajectory;
+    initScenario('recorded');
+    elPlay.disabled = false;
+    elScenario.disabled = false;
+    requestAnimationFrame(animate);
+  }).catch(() => {
+    elIntegrator.textContent = 'Trajectory unavailable';
+  });
 
 })();

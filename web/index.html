@@ -16,7 +16,8 @@
       </div>
       <div class="header-controls">
         <label for="scenario-select">Scenario:</label>
-        <select id="scenario-select">
+        <select id="scenario-select" aria-label="Scenario">
+          <option value="recorded" selected>Native double-pendulum recording</option>
           <option value="dzhanibekov">Dzhanibekov Intermediate Axis Flip (SO(3) LGVI)</option>
           <option value="double_pendulum">Double Pendulum Chaos (Symplectic Verlet)</option>
           <option value="newtons_cradle">Newton's Cradle (Moreau-Jean LCP Impacts)</option>
@@ -27,6 +28,7 @@
         <button id="btn-play" class="btn btn-primary">▶ Play</button>
       </div>
     </header>
+    <p class="recording-note">Replay the Lua integrator's exported trajectory. Other scenarios run as browser illustrations. <a href="https://github.com/Aneesh495/fulcrum/blob/main/examples/08_web_visualizer_export.lua">Trajectory exporter</a></p>
 
     <main class="main-content">
       <div class="viewport-panel">
@@ -35,7 +37,7 @@
           <div class="hud-item"><span class="hud-label">FPS:</span> <span id="val-fps">60</span></div>
           <div class="hud-item"><span class="hud-label">Sim Time:</span> <span id="val-time">0.000 s</span></div>
           <div class="hud-item"><span class="hud-label">Integrator:</span> <span id="val-integrator">SO(3) Discrete Variational</span></div>
-          <div class="hud-item"><span class="hud-label">Energy Drift:</span> <span id="val-drift">1.42e-12</span></div>
+          <div class="hud-item"><span class="hud-label">Relative Energy Drift:</span> <span id="val-drift">1.42e-12</span></div>
         </div>
       </div>
 
@@ -63,7 +65,7 @@
         </div>
 
         <div class="panel-section chart-section">
-          <h3>Energy Conservation Graph</h3>
+          <h3>Recorded Energy Trace</h3>
           <canvas id="canvas-chart" width="360" height="150"></canvas>
           <div class="chart-legend">
             <span class="legend-item"><span class="dot dot-total"></span> Total Energy H</span>
@@ -73,7 +75,7 @@
         </div>
 
         <div class="panel-section">
-          <h3>Joint Coordinates (q)</h3>
+          <h3>Joint Coordinates (q)</h3><p id="recorded-joints"></p>
           <div id="joint-readouts" class="joint-container">
             <!-- Dynamic joint sliders/values -->
           </div>
@@ -91,7 +93,7 @@
     <footer class="footer">
       <div class="playback-bar">
         <span id="scrubber-time-start">0.00s</span>
-        <input type="range" id="timeline-scrubber" min="0" max="1000" value="0">
+        <input type="range" id="timeline-scrubber" aria-label="Seek recorded trajectory" min="0" max="1000" value="0">
         <span id="scrubber-time-end">10.00s</span>
       </div>
       <div class="speed-control">
